@@ -1,17 +1,42 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import {BrowserRouter, Route, Routes} from 'react-router-dom'
 import './index.css';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+import {ChakraProvider} from "@chakra-ui/react";
+import Employees from "./components/pages/Employees";
+import {QueryClient, QueryClientProvider} from "react-query";
+import Main from "./components/pages/Main";
+
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            refetchOnReconnect: false,
+            refetchOnWindowFocus: false
+        }
+    }
+})
+
+const Providers = ({children}) => (
+    <BrowserRouter>
+        <ChakraProvider>
+            <QueryClientProvider client={queryClient}>
+                {children}
+            </QueryClientProvider>
+        </ChakraProvider>
+    </BrowserRouter>
+)
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+    <React.StrictMode>
+        <Providers>
+            <Routes>
+                <Route path="/" element={<App/>}>
+                    <Route path="/" element={<Main/>}/>
+                    <Route path="employees" element={<Employees/>}/>
+                </Route>
+            </Routes>
+        </Providers>
+    </React.StrictMode>,
+    document.getElementById('root')
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
